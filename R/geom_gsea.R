@@ -1,232 +1,104 @@
 # devtools::document()
-seeqR::main()
-de <- seeqR::sqDE
-sets <- qusage::read.gmt(file = "~/bioinformatics/gene_sets/c2.cp.kegg.v6.2.entrez.gmt")
-rl <- seekGSErl(de) %>% `names<-`(mouse2human(names(.))$humanID)
-gsea <- fgsea::fgsea(pathways = sets, stats = rl, nperm = 1000)
-gsea$pathway[1]
 
+geom_gsea <- function(rl, set, weight=1, showTicks=T, showGradient=T, prettyGSEA=T, ...){
 
-rl # gene list, ranked by some metric, e.g. log2FC
+  df <- .gseaCurve(rl, set, weight)
 
+  main <- list( ggplot2::geom_path(ggplot2::aes(x=x, y=y), data=df, color="green") )
 
+  if(showTicks){
+    ticksdf <- .presenceTicks(rl, df)
+    ticks <- ggplot2::geom_segment(data=ticksdf, mapping=ggplot2::aes(x=x, y=y1, xend=x, yend=y2), size=0.2)
 
+    main <- c(main, ticks)
+  }
 
+  if(showGradient){
+    gradientdf <- .colorRibbon(rl, df)
+    gradient <- ggplot2::geom_rect(ggplot2::aes(xmin=x1, xmax=x2, ymin=y1, ymax=y2), data=gradientdf, fill=gradientdf$color)
 
+    main <- c(main, gradient)
+  }
 
+  if(prettyGSEA){
+    main <- c(
+      geom_hline(yintercept=0),
+    main)
+  }
 
+  return( main )
 
-
-
-
-
-
-
-
-gseaRes <- fgsea::calcGseaStat(statsAdj, selectedStats=pos, returnAllExtremes=T)
-
-rlnorm <- rl/max(abs(rl))
-
-statsAdj <- stats#[ord] # puts the rankedList into correct order (also actually unnecessary)
-statsAdj <- sign(statsAdj) * (abs(statsAdj) ^ gseaParam) # increases the rl values by gseaParam without losing the - or + before the value
-statsAdj <- statsAdj / max(abs(statsAdj)) # normalizing the rl values by the max
-
-pathway <- sort(unname(as.vector(na.omit(match(pathway, names(st)))))) # vector with positions genes from geneset in the ranked list
-gseaRes <- fgsea::calcGseaStat(rl, selectedStats=pos, returnAllExtremes=T)
-
-
-bottom <- min(gseaRes$bottoms, na.rm=T)
-top <- max(gseaRes$tops, na.rm=T)
-xs <- as.vector(rbind(pathway-1, pathway)) #combines the vectors in an alternating fashion
-ys <- as.vector(rbind(gseaRes$bottoms, gseaRes$tops))
-n <- length(statsAdj)
-toPlot <- data.frame(x=c(0, xs, n+1), y=c(0, ys, 0))
-set <- sets[[1]]
-geom_gsea <- function(rl, set, gsea){
-
-  set <- set[set %in% names(rl)]
-  rloutside <- rl[!names(rl) %in% set]
-  rlinside <- rl[names(rl) %in% set]
-
-  #normalize ranked list
-  rlnorm <- rl/max(abs(rl))
-
-  #positions of genes in the ranked list
-  positions<- match(set, names(rl))
-  positions <- sort(na.omit(positions)) #remove unfound genes and sort vector
-
-
-
-  fgsea::calcGseaStat(stats=rl, selectedStats=positions, returnAllExtremes=T)
-
-  xvals <- pos
-
-
-  positions2 <- c(positions[2:length(positions)], length(rl))
-  hits <- mapply(function(x, y, z) rep(z, y-x), x=positions, y=positions2, z=seq_along(pos), SIMPLIFY=F)
-  hits <- unlist(hits)
-  hits <- c( rep(0, pos[1]-1), hits , hits[length(hits)])# add initial misses (until the first hit) at the start, and a last number at the end
-  hits <- hits/length(hits)
-
-
-
-  hitsANDmisses <- seq_along(rl)/length(rl) #total number of hits or misses until each position
-  misses <- hitsANDmisses - hits
-  total_loss <- diff(hitsANDmisses[1:2]) * (length(rl) - length(positions))
-  total_gain <- 1 - total_loss
-
-  sapply(positions, function(x) rl[positions])
 }
 
-#   bottom <- min(gseaRes$bottoms, na.rm=T)
-#   top <- max(gseaRes$tops, na.rm=T)
-#   xs <- as.vector(rbind(pathway-1, pathway)) #combines the vectors in an alternating fashion
-#   ys <- as.vector(rbind(gseaRes$bottoms, gseaRes$tops))
-#   n <- length(statsAdj)
-#
-#   #==gsea=line=(most=important=part)==#
-#   toPlot <- data.frame(x=c(0, xs, n+1), y=c(0, ys, 0))
-#   #==axis=labels==#
-#   axisXtext <- c(ceiling(top*10)/10, ceiling(bottom*10)/10)
-#   axisXspace <- abs(round(2*(axisXtext[1]-axisXtext[2]))/10)*2
-#   axisXtext <- round(c(seq(axisXtext[2], axisXtext[1], by=ifelse(axisXspace==0, 0.1 ,axisXspace)), 0),1)
-#
-#   #==Title==#
-#   if(!is.na(plotTitle)){ # if a plotTitle is specified, use it
-#     toPlot$title = plotTitle
-#   }else{
-#     toPlot$title = setName # else, use the default name
-#   }
-#
-#   #==Positions==#
-#   x=y=NULL
-#   sizeFactor <- ((top - bottom))
-#   yStats <- c(bottom+(sizeFactor*0.01), bottom+sqrt(ggarrangeRows)*(sizeFactor*0.2*annoSize/10))
-#   yTicks <- c(bottom-(sizeFactor*0.025), bottom-(sizeFactor*0.125))
-#   yRibbon <- c(bottom-(sizeFactor*0.13), bottom-(sizeFactor*0.23))
-#   yLabel <- bottom-(sizeFactor*0.28)
-#   vline <- c(length(rankedList[rankedList>=cutC]),
-#              length(rankedList)-length(rankedList[rankedList<=-cutC]),
-#              length(rankedList[rankedList>=0]))
 
+theme_gsea <- function(){
+  mytheme <- theme(
 
+  )
+}
 
+.gseaCurve <- function(rl, set, weight=1){
+  # 0) reduce the set so that only genes are left that come up in the ranked list
+  set <- set[set %in% names(rl)]
 
+  # 1) a vector that has a number for each gene in the ranked list: 0 if not in the set, and its metric (adjusted by a defined weight) if it is in the set.
+  presence <- ifelse(names(rl) %in% set, rl^weight, 0)
 
+  # 2) a similar vector, except it has a 1 for every gene NOT in the list, and a 0 for everything else.
+  absence <- ifelse(presence>0,0,1)
 
+  # 3) calculate the relative cumulative increase for presence and absence
+  cumPresence <- cumsum(presence)
+  relPresence <- sapply(cumPresence, function(x) x/max(cumPresence)) #stepwise increase for presence
+  relAbsence <- cumsum(absence) / (length(rl) - length(set)) #stepwise increase for absence
 
+  # 4) subtract the cumulative absence from the cumulative presence to get the enrichment score
+  es <- resPresence-resAbsence #enrichment score
+  xcoord <- seq_along(es)
 
+  df <- data.frame(x = xcoord, y = es)
+  return(df)
+}
 
-# seekGSEplot <- function(rankedList, setID, setList="BP", Species=NA, gseaTable=NA,
-#                         annotations=c("up","down"), plotTitle=NA,
-#                         cutC=log2(1.5), gseaParam=1,
-#                         vlines=T, hlines=T, lineSize=1.5, ticksSize=0.2,
-#                         textSize=30, annoSize=10, colors=c("red","blue","green"),
-#                         yTitle=T, xTitle=T, xText=T, ggarrangeRows=1) {
-#
-#   #==check=input==#
-#   if(is.na(Species)){stop("!!!Error, no Species selected!!!")}
-#   stats <- rankedList
-#
-#   ##=pathway=genes=##===================================================================
-#   #==for=GO=(if)=or=customSets=(else)=#
-#   if(is.character(setList)){
-#     setName <- AnnotationDbi::Term(GO.db::GOTERM[AnnotationDbi::Ontology(GO.db::GOTERM)==setList]) #vector of GO-set-names, with GOIDs as vector names
-#     setName <- as.character(setName[names(setName) %in% setID]) #string of GO-set-name corresponding to GO-ID given by the "setID" parameter
-#     pathway <- switch(Species,
-#                       "human"=as.list(org.Hs.eg.db::org.Hs.egGO2EG)[[setID]], #all gene IDs for the specific GO-ID
-#                       "mouse"=as.list(org.Mm.eg.db::org.Mm.egGO2EG)[[setID]])
-#   }else{
-#     setName <- setID
-#     pathway <- setList[[setID]]
-#   }
-#   print(setName)
-#   setName <- gsub("^REACTOME_","",gsub("^KEGG_","",setName))
-#   wordcut <- floor(nchar(setName)/2)-3
-#   getspace <- FALSE
-#
-#   while(!getspace){
-#     getspace <- {substr(setName, wordcut,wordcut) %in% c("_",",",";"," ","-",".")}
-#     if(!getspace){wordcut <- wordcut+1}
-#     if(wordcut==nchar(setName)){getspace <- TRUE}
-#   }
-#   setName <- paste0(substr(setName, 1, wordcut), "\n", substr(setName, wordcut+1, nchar(setName)))
-#
-#   #=====================================================================================
-#   #=====================================================================================
-#
-#   ##=fgsea=calculation=##===============================================================
-#   #==rankedList=preparation==#
-#   rnk <- rank(-stats) # gives a vector: 1,2,3,4,... ranking the rankedList (actually unnecessary)
-#   ord <- order(rnk) # orders the previous vector (also actually unnecessary)
-#   statsAdj <- stats#[ord] # puts the rankedList into correct order (also actually unnecessary)
-#   statsAdj <- sign(statsAdj) * (abs(statsAdj) ^ gseaParam) # increases the rl values by gseaParam without losing the - or + before the value
-#   statsAdj <- statsAdj / max(abs(statsAdj)) # normalizing the rl values by the max
-#
-#   #==find=genes=from=rankedList=in=setID==#
-#   pathway <- unname(as.vector(na.omit(match(pathway, names(statsAdj))))) # vector with positions genes from geneset in the ranked list
-#   pathway <- sort(pathway) # vector is sorted by positions
-#
-#   #==fgsea=function==#
-#   gseaRes <- fgsea::calcGseaStat(statsAdj, selectedStats=pathway, returnAllExtremes=T)
-#
-#   #=====================================================================================
-#   #=====================================================================================
-#
-#   ##=calculations=##====================================================================
-#   #==calculating=x=and=y=coordinates==#
-#   bottom <- min(gseaRes$bottoms, na.rm=T)
-#   top <- max(gseaRes$tops, na.rm=T)
-#   xs <- as.vector(rbind(pathway-1, pathway)) #combines the vectors in an alternating fashion
-#   ys <- as.vector(rbind(gseaRes$bottoms, gseaRes$tops))
-#   n <- length(statsAdj)
-#
-#   #==gsea=line=(most=important=part)==#
-#   toPlot <- data.frame(x=c(0, xs, n+1), y=c(0, ys, 0))
-#   #==axis=labels==#
-#   axisXtext <- c(ceiling(top*10)/10, ceiling(bottom*10)/10)
-#   axisXspace <- abs(round(2*(axisXtext[1]-axisXtext[2]))/10)*2
-#   axisXtext <- round(c(seq(axisXtext[2], axisXtext[1], by=ifelse(axisXspace==0, 0.1 ,axisXspace)), 0),1)
-#
-#   #==Title==#
-#   if(!is.na(plotTitle)){ # if a plotTitle is specified, use it
-#     toPlot$title = plotTitle
-#   }else{
-#     toPlot$title = setName # else, use the default name
-#   }
-#
-#   #==Positions==#
-#   x=y=NULL
-#   sizeFactor <- ((top - bottom))
-#   yStats <- c(bottom+(sizeFactor*0.01), bottom+sqrt(ggarrangeRows)*(sizeFactor*0.2*annoSize/10))
-#   yTicks <- c(bottom-(sizeFactor*0.025), bottom-(sizeFactor*0.125))
-#   yRibbon <- c(bottom-(sizeFactor*0.13), bottom-(sizeFactor*0.23))
-#   yLabel <- bottom-(sizeFactor*0.28)
-#   vline <- c(length(rankedList[rankedList>=cutC]),
-#              length(rankedList)-length(rankedList[rankedList<=-cutC]),
-#              length(rankedList[rankedList>=0]))
-#
-#   #==colorRibbon==#
-#   # bar lengths for each threshold
-#   barlength <- unique((cutC*c(1/4,1/2,1,2,4,4,8,8,8,8,rep(16,8))[1:(3+ceiling(max(abs(rankedList))))])) # vector with lengths for log2FC thresholds
-#   barlength <- na.omit(barlength)
-#   barlength <- c(rev(barlength)[2:length(barlength)],0, -barlength) # vector as above but mirrored (highest, ..., 0, ..., -highest)
-#   barlength <- sapply(barlength, function(x) sum(rankedList>=x)) # vector with number of genes that have log2FC above the thresholds
-#   # bar colors
-#   # colfunc1 <- colorRampPalette(c(colors[1], "white")) #functions for getting a color ramp
-#   # colfunc2 <- colorRampPalette(c("white", colors[2]))
-#   # barcolor <- c(colfunc1(length(barlength)/2), colfunc2(length(barlength)/2))
-#   barcolor <- .mycolorgradient(length(barlength), highcol=colors[2], midcol="white", lowcol=colors[1])
-#   # data.frame: each row has a bar color intensity, bar length, bar start (x1) and end (x2) position and an Order-Number
-#   colorRibbon <- data.frame(barcolor=barcolor,
-#                             barlength=barlength,
-#                             x1=c(0,barlength[1:(length(barlength)-1)]),
-#                             x2=barlength)
-#   # divide data frame into red and blue ribbon
-#   colorRibbon1 <- colorRibbon[1:(length(barcolor)/2),]
-#   colorRibbon2 <- colorRibbon[((length(barcolor)/2)+1):length(barcolor),]
-#   #=====================================================================================
-#   #=====================================================================================
+.presenceTicks <- function(rl, dfLine){
+  minES <- min(dfLine$y)
+  maxES <- max(dfLine$y)
+  sizeFactor <- maxES - minES
+
+  ticks <- data.frame(x = which(names(rl) %in% set),
+                      y1 = minES-(sizeFactor*0.025),
+                      y2 = minES-(sizeFactor*0.125))
+  return(ticks)
+}
+
+.colorRibbon <- function(rl, dfLine, lowcol="blue", midcol="white", highcol="red", resolution=100){
+
+  # 1) create a data.frame that will eventually hold the plotting values. Start with a sequence from -max to +max of the ranked list's metric
+  limit <- max(abs(rl))
+  gradient <- data.frame( valueMax = seq(-limit, limit, length.out=resolution) )[-1,,drop=FALSE]
+
+  # 2) add color values to the table that correspond to the metric
+  colfunc1 <- grDevices::colorRampPalette(c(highcol, midcol)) #functions for getting a color ramp
+  colfunc2 <- grDevices::colorRampPalette(c(midcol, lowcol))
+  gradient$color <- c(colfunc1(resolution/2), colfunc2(resolution/2)[-1])
+
+  # 3) the x columns will contain the number of genes that contain a value <= than the one in the current row. Know we know where each color starts and ends
+  #(the x axis will be as long as the number of genes in the ranked list, therefore the number of genes with a metric smaller than the one that stands for a color defines how long-stretched this color will be)
+  gradient$x1 <- sapply( gradient$valueMax, function(x) sum(rl <= x) )
+  gradient <- gradient[!duplicated(gradient$x1),]
+  gradient$x2 <- c( 1, gradient$x1[-nrow(gradient)] )
+  gradient <- gradient[-nrow(gradient),]
+
+  # 4) add y column, which will be the same for all. The y position will only be influenced by the ES values (i.e. where the curve is)
+  minES <- min(dfLine$y)
+  maxES <- max(dfLine$y)
+  sizeFactor <- maxES - minES
+  gradient$y1 <- minES - sizeFactor*0.13
+  gradient$y2 <- minES - sizeFactor*0.23
+
+  return(gradient)
+}
+
 #
 #   ##=GSEA=plot=##=======================================================================
 #   plot <- ggplot2::ggplot(toPlot, ggplot2::aes(x=x, y=y)) +
