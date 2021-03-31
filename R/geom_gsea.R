@@ -1,4 +1,121 @@
 # devtools::document()
+seeqR::main()
+de <- seeqR::sqDE
+sets <- qusage::read.gmt(file = "~/bioinformatics/gene_sets/c2.cp.kegg.v6.2.entrez.gmt")
+rl <- seekGSErl(de) %>% `names<-`(mouse2human(names(.))$humanID)
+gsea <- fgsea::fgsea(pathways = sets, stats = rl, nperm = 1000)
+gsea$pathway[1]
+
+
+rl # gene list, ranked by some metric, e.g. log2FC
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+gseaRes <- fgsea::calcGseaStat(statsAdj, selectedStats=pos, returnAllExtremes=T)
+
+rlnorm <- rl/max(abs(rl))
+
+statsAdj <- stats#[ord] # puts the rankedList into correct order (also actually unnecessary)
+statsAdj <- sign(statsAdj) * (abs(statsAdj) ^ gseaParam) # increases the rl values by gseaParam without losing the - or + before the value
+statsAdj <- statsAdj / max(abs(statsAdj)) # normalizing the rl values by the max
+
+pathway <- sort(unname(as.vector(na.omit(match(pathway, names(st)))))) # vector with positions genes from geneset in the ranked list
+gseaRes <- fgsea::calcGseaStat(rl, selectedStats=pos, returnAllExtremes=T)
+
+
+bottom <- min(gseaRes$bottoms, na.rm=T)
+top <- max(gseaRes$tops, na.rm=T)
+xs <- as.vector(rbind(pathway-1, pathway)) #combines the vectors in an alternating fashion
+ys <- as.vector(rbind(gseaRes$bottoms, gseaRes$tops))
+n <- length(statsAdj)
+toPlot <- data.frame(x=c(0, xs, n+1), y=c(0, ys, 0))
+set <- sets[[1]]
+geom_gsea <- function(rl, set, gsea){
+
+  set <- set[set %in% names(rl)]
+  rloutside <- rl[!names(rl) %in% set]
+  rlinside <- rl[names(rl) %in% set]
+
+  #normalize ranked list
+  rlnorm <- rl/max(abs(rl))
+
+  #positions of genes in the ranked list
+  positions<- match(set, names(rl))
+  positions <- sort(na.omit(positions)) #remove unfound genes and sort vector
+
+
+
+  fgsea::calcGseaStat(stats=rl, selectedStats=positions, returnAllExtremes=T)
+
+  xvals <- pos
+
+
+  positions2 <- c(positions[2:length(positions)], length(rl))
+  hits <- mapply(function(x, y, z) rep(z, y-x), x=positions, y=positions2, z=seq_along(pos), SIMPLIFY=F)
+  hits <- unlist(hits)
+  hits <- c( rep(0, pos[1]-1), hits , hits[length(hits)])# add initial misses (until the first hit) at the start, and a last number at the end
+  hits <- hits/length(hits)
+
+
+
+  hitsANDmisses <- seq_along(rl)/length(rl) #total number of hits or misses until each position
+  misses <- hitsANDmisses - hits
+  total_loss <- diff(hitsANDmisses[1:2]) * (length(rl) - length(positions))
+  total_gain <- 1 - total_loss
+
+  sapply(positions, function(x) rl[positions])
+}
+
+#   bottom <- min(gseaRes$bottoms, na.rm=T)
+#   top <- max(gseaRes$tops, na.rm=T)
+#   xs <- as.vector(rbind(pathway-1, pathway)) #combines the vectors in an alternating fashion
+#   ys <- as.vector(rbind(gseaRes$bottoms, gseaRes$tops))
+#   n <- length(statsAdj)
+#
+#   #==gsea=line=(most=important=part)==#
+#   toPlot <- data.frame(x=c(0, xs, n+1), y=c(0, ys, 0))
+#   #==axis=labels==#
+#   axisXtext <- c(ceiling(top*10)/10, ceiling(bottom*10)/10)
+#   axisXspace <- abs(round(2*(axisXtext[1]-axisXtext[2]))/10)*2
+#   axisXtext <- round(c(seq(axisXtext[2], axisXtext[1], by=ifelse(axisXspace==0, 0.1 ,axisXspace)), 0),1)
+#
+#   #==Title==#
+#   if(!is.na(plotTitle)){ # if a plotTitle is specified, use it
+#     toPlot$title = plotTitle
+#   }else{
+#     toPlot$title = setName # else, use the default name
+#   }
+#
+#   #==Positions==#
+#   x=y=NULL
+#   sizeFactor <- ((top - bottom))
+#   yStats <- c(bottom+(sizeFactor*0.01), bottom+sqrt(ggarrangeRows)*(sizeFactor*0.2*annoSize/10))
+#   yTicks <- c(bottom-(sizeFactor*0.025), bottom-(sizeFactor*0.125))
+#   yRibbon <- c(bottom-(sizeFactor*0.13), bottom-(sizeFactor*0.23))
+#   yLabel <- bottom-(sizeFactor*0.28)
+#   vline <- c(length(rankedList[rankedList>=cutC]),
+#              length(rankedList)-length(rankedList[rankedList<=-cutC]),
+#              length(rankedList[rankedList>=0]))
+
+
+
+
+
+
+
+
 
 # seekGSEplot <- function(rankedList, setID, setList="BP", Species=NA, gseaTable=NA,
 #                         annotations=c("up","down"), plotTitle=NA,
