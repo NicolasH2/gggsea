@@ -25,7 +25,7 @@ geom_gseaGradient <- function(df, ...){
     stat = "identity",
     position = "identity",
     show.legend = FALSE,
-    inherit.aes = TRUE,
+    inherit.aes = FALSE,
     params=list(...)
   )
   userInput <- names(as.list(match.call())) #get all parameters set by the user
