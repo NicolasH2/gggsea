@@ -29,7 +29,10 @@ geom_gsea <- function(df, prettyGSEA=T, ...){
   ticks <- geom_gseaTicks(df[!is.na(df$y1ticks), ], ...)
   gradient <- geom_gseaGradient(df[!is.na(df$y1gradient), ], ...)
 
-  main <- list(gseaLine, ticks, gradient)
+  main <- list(gseaLine, 
+               ticks, 
+               gradient,
+               facet_wrap(~set, scale="free") )
 
   # beautify the graph
   if(prettyGSEA){
