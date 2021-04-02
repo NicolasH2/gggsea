@@ -32,7 +32,7 @@ geom_gsea <- function(df, prettyGSEA=T, ...){
   main <- list(gseaLine, 
                ticks, 
                gradient,
-               facet_wrap(~set, scale="free") )
+               facet_wrap(~set, scale="free_y") )
 
   # beautify the graph
   if(prettyGSEA){
