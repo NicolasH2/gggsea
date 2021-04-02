@@ -4,7 +4,7 @@
 \alias{gseaCurve}
 \title{calculate coordinates for a GSEA plot}
 \usage{
-gseaCurve(rl, setlist, weight = 1, withTicks = T, withGradient = T)
+gseaCurve(rl, setlist, weight = 1)
 }
 \arguments{
 \item{rl}{named(!), sorted(!) vector. This ranked list's Values are the ranking metric (e.g. log2FC), names are the genes IDs. Gene IDs have to be of the same type as the ones in setList.}
@@ -12,10 +12,6 @@ gseaCurve(rl, setlist, weight = 1, withTicks = T, withGradient = T)
 \item{setlist}{names(!) list of character vectors. Each vector is a gene signature, each item in that vector is a gene ID (same type as the ones in rl!)}
 
 \item{weight}{number, the higher the more important are the changes at the extremes. 0: no weight, i.e. each found gene counts the same. 1: each gene counts according to its metric. 2: genes counts according to their squared matric, etc.}
-
-\item{withTicks}{boolean, should there be ticks?}
-
-\item{withGradient}{boolean, should ther be a color gradient?}
 }
 \value{
 a data.frame with coordinates for a GSEA plot. When given as an input, geom_gsea will automatically take care. Otherwise: x and y plot the regular curve (geom_path); x, y1ticks and y2ticks plot the ticks (use geom_segment); color, x, xGradientStart, y1gradient and y2gradient for color bar (use geom_rect)

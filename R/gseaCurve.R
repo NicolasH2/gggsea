@@ -3,8 +3,6 @@
 #' Imports:
 #' grDevices
 #'
-#' @inheritParams geom_gsea
-#'
 #' @param rl named(!), sorted(!) vector. This ranked list's Values are the ranking metric (e.g. log2FC), names are the genes IDs. Gene IDs have to be of the same type as the ones in setList.
 #' @param setlist names(!) list of character vectors. Each vector is a gene signature, each item in that vector is a gene ID (same type as the ones in rl!)
 #' @param weight number, the higher the more important are the changes at the extremes. 0: no weight, i.e. each found gene counts the same. 1: each gene counts according to its metric. 2: genes counts according to their squared matric, etc.
@@ -19,7 +17,7 @@
 #'
 #'
 #'
-gseaCurve <- function(rl, setlist, weight=1, withTicks=T, withGradient=T){
+gseaCurve <- function(rl, setlist, weight=1){
 
   dfList <- mapply(function(set, setname){
     if( sum(set %in% names(rl))==0 ) stop("None of the genes in the ranked list are present in the set.")
@@ -51,17 +49,15 @@ gseaCurve <- function(rl, setlist, weight=1, withTicks=T, withGradient=T){
     maxES <- max(df$y)
     minES <- min(df$y)
     sizeFactor <- abs(maxES - minES)
-    lowestPoint <- minES
+    lowestPoint <- minES - sizeFactor / 30
 
-    if(withTicks){#incluce into df the data fro the ticks
-      df <- merge(df, .presenceTicks(rl, set, lowestPoint, sizeFactor), by="x", all=T)
-      lowestPoint <- min(df$y2ticks, na.rm=TRUE)
-    }
+    df$bottomline <- lowestPoint
 
-    if(withGradient){#include into df the data for the colorGradient
-      df <- merge(df, .colorGradient(rl, lowestPoint, sizeFactor), by="x", all=T)
-      lowestPoint <- df$y2gradient[1]
-    }
+    df <- merge(df, .presenceTicks(rl, set, lowestPoint, sizeFactor), by="x", all=TRUE)
+    lowestPoint <- min(df$y2ticks, na.rm=TRUE)
+    df <- merge(df, .colorGradient(rl, lowestPoint, sizeFactor), by="x", all=TRUE)
+
+    return(df)
 
   }, set=setlist, setname=names(setlist), SIMPLIFY=FALSE)
 
@@ -101,7 +97,7 @@ gseaCurve <- function(rl, setlist, weight=1, withTicks=T, withGradient=T){
   #gradient <- gradient[-nrow(gradient),]
 
   # 4) add y column, which will be the same for all. The y position will only be influenced by the ES values (i.e. where the curve is)
-  gradient$y1gradient <- lowestPoint - sizeFactor / 40 #multiplying by the sizefactor is necessary to keep the gradient height and position the same in every graph
+  gradient$y1gradient <- lowestPoint #multiplying by the sizefactor is necessary to keep the gradient height and position the same in every graph
   gradient$y2gradient <- lowestPoint - sizeFactor / 8
 
   return(gradient)

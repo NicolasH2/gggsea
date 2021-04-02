@@ -4,14 +4,10 @@
 \alias{geom_gsea}
 \title{create a venn diagram in ggplot2}
 \usage{
-geom_gsea(df, withTicks = T, withGradient = T, prettyGSEA = T, ...)
+geom_gsea(df, prettyGSEA = T, ...)
 }
 \arguments{
 \item{df}{data.frame, calculated by the function gseaCurve}
-
-\item{withTicks}{boolean, should there be ticks?}
-
-\item{withGradient}{boolean, should ther be a color gradient?}
 
 \item{prettyGSEA}{boolean, should some aesthetics be automatically added? Adds a 0-line, regulates y-breaks and labels the axes.}
 
@@ -19,6 +15,10 @@ geom_gsea(df, withTicks = T, withGradient = T, prettyGSEA = T, ...)
 often aesthetics, used to set an aesthetic to a fixed value, like
 \code{colour = "red"} or \code{size = 3}. They may also be parameters
 to the paired geom/stat.}
+
+\item{withTicks}{boolean, should there be ticks?}
+
+\item{withGradient}{boolean, should ther be a color gradient?}
 }
 \value{
 a list of ggplot layers, ready to be added to a ggplot object

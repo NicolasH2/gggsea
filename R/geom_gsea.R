@@ -23,38 +23,39 @@
 #'
 #' curve <- gseaCurve()
 #'
-geom_gsea <- function(df, withTicks=T, withGradient=T, prettyGSEA=T, ...){
+geom_gsea <- function(df, prettyGSEA=T, ...){
 
   gseaLine <- geom_gseaLine(df, ...)
-  main <- list(gseaLine)
+  ticks <- geom_gseaTicks(df[!is.na(df$y1ticks), ], ...)
+  gradient <- geom_gseaGradient(df[!is.na(df$y1gradient), ], ...)
 
-  if(withTicks){
-    ticks <- geom_gseaTicks(df, ...)
-    main <- c(main, ticks)
-  }
+  main <- list(gseaLine, ticks, gradient)
 
-  if(withGradient){
-    gradient <- geom_gseaTicks(df, ...)
-    main <- c(main, gradient)
-  }
-
+  # beautify the graph
   if(prettyGSEA){
-    maxES <- max(df$y)
-    minES <- min(df$y)
-    sizeFactor <- abs(maxES - minES)
 
-    ystepsize <- signif(sizeFactor/3, digits=1) #round the sizefactor fraction to the nearest digit
-    nDown <- round(minES / ystepsize) #number of ticks below 0
-    nUp <- round(maxES / ystepsize) # number of ticks above 0
-    breaks <- c(
-      seq(from = 0, to = -nDown * ystepsize, by = ystepsize),
-      seq(from = 0, to = nUp * ystepsize,    by = ystepsize)
-    )
+    break_fun <- function(y){
+      maxY <- max(y) #important: y is not the y in the aes, but rather the maximum and minimum y values on the entire graph
+      minY <- min(y)
+      sizeFactor <- abs(maxY-minY)
+      minY <- minY + sizeFactor * 0.22
+      ystepsize <- signif(sizeFactor/4, digits=1) #round the sizefactor fraction to the nearest digit
+
+      nDown <- ceiling(minY / ystepsize) #number of ticks below 0
+      nUp <- round(maxY / ystepsize) # number of ticks above 0
+      breaks <- c(
+        seq(from = nDown * ystepsize, to = 0, by = ystepsize),
+        seq(from = 0, to = nUp * ystepsize,    by = ystepsize)
+      )
+
+      return(breaks)
+    }
 
     main <- c(list(
+      geom_hline( mapping = aes(yintercept=bottomline), data = df[!duplicated(df$set),] ),
       geom_hline(yintercept=0),
       labs(x="rank", y="enrichment score"),
-      scale_y_continuous(breaks=breaks),
+      scale_y_continuous(breaks=break_fun),
       main
     ))
   }
