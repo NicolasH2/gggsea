@@ -53,7 +53,7 @@ ggplot2::ggplot() +
 
 # Multiple GSEA plots
 
-If we want to vizualize several sets at once (against the same ranked list), we can do that and simply tell ggplot to do a facet_wrap. The variable for facet_wrap has to be ~set. That is a column from the gseaCurve output (as you can see for yourself) that contains the set names. Note that if you do not specify facet_wrap but still have more than one set in the setlist, the plot will be messed up.
+If we want to vizualize several sets at once (against the same ranked list), we can do that. When using gseaCurve, simply use more sets, but take care that they are always in a names list.
 
 
 ```r
@@ -61,7 +61,6 @@ df <- gseaCurve(myRL, mySetlist[1:2])
 
 ggplot2::ggplot() + 
   geom_gsea(df) +
-  ggplot2::facet_wrap(~set, scale="free") +
   theme_gsea(textsize = 10)
 ```
 <img src="readme_files/gsea_facet.png"/>
