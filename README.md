@@ -7,8 +7,8 @@ An R package that draws GSEA plots in [ggplot2](https://ggplot2.tidyverse.org/).
 Table of contents:
 
 - [Installation](#Installation)
-- [Single-GSEA-plot](#Single GSEA plot)
-- [Multiple-GSEA-plots](#Multiple GSEA plots)
+- [Single GSEA plot](#Single-GSEA-plot)
+- [Multiple GSEA plots](#Multiple-GSEA-plots)
 - [Customization](#Customization)
 
 # Installation
