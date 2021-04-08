@@ -4,10 +4,12 @@
 \alias{geom_gsea}
 \title{create a venn diagram in ggplot2}
 \usage{
-geom_gsea(df, prettyGSEA = T, ...)
+geom_gsea(df, labelsize = 4, prettyGSEA = T, ...)
 }
 \arguments{
 \item{df}{data.frame, calculated by the function gseaCurve}
+
+\item{labelsize}{number, font size of the statistics (if gsea is provided)}
 
 \item{prettyGSEA}{boolean, should some aesthetics be automatically added? Adds a 0-line, regulates y-breaks and labels the axes.}
 
@@ -34,6 +36,7 @@ uses the functions geom_gseaLine, geom_gseaTicks and geom_gseaGradient, from thi
 library(gggsea)
 library(ggplot)
 
-curve <- gseaCurve()
+curve <- gseaCurve(myRankedlist, mySetlist)
+ggplot() + geom_gsea(curve) + theme_gsea()
 
 }

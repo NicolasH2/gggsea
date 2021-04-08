@@ -11,6 +11,7 @@
 #' @import ggplot2
 #'
 #' @param df data.frame, calculated by the function gseaCurve
+#' @param labelsize number, font size of the statistics (if gsea is provided)
 #' @param withTicks boolean, should there be ticks?
 #' @param withGradient boolean, should ther be a color gradient?
 #' @param prettyGSEA boolean, should some aesthetics be automatically added? Adds a 0-line, regulates y-breaks and labels the axes.
@@ -21,18 +22,27 @@
 #' library(gggsea)
 #' library(ggplot)
 #'
-#' curve <- gseaCurve()
+#' curve <- gseaCurve(myRankedlist, mySetlist)
+#' ggplot() + geom_gsea(curve) + theme_gsea()
 #'
-geom_gsea <- function(df, prettyGSEA=T, ...){
+geom_gsea <- function(df, labelsize=4, prettyGSEA=T, ...){
 
   gseaLine <- geom_gseaLine(df, ...)
   ticks <- geom_gseaTicks(df[!is.na(df$y1ticks), ], ...)
   gradient <- geom_gseaGradient(df[!is.na(df$y1gradient), ], ...)
 
-  main <- list(gseaLine, 
-               ticks, 
+  # statlabel <- substitute(paste(italic("NES"), " = ",NES))
+  # paste0("NES=",round(NES,2), " p=",round(pval,4))
+
+  df$ypval <- df$ypval + labelsize^(1.7)/40 * abs(df$ypval-df$yNES)
+
+  main <- list(gseaLine,
+               ticks,
                gradient,
-               facet_wrap(~set, scale="free_y") )
+               ggplot2::facet_wrap(~set, scale="free_y"),
+               ggplot2::geom_text(data=df, mapping = aes(x, yNES, label=NEStext ), size=labelsize, hjust=0, vjust=0 , parse=T),
+               ggplot2::geom_text(data=df, mapping = aes(x, ypval, label=pvaltext ), size=labelsize, hjust=0, vjust=0 , parse=T)
+               )
 
   # beautify the graph
   if(prettyGSEA){
@@ -66,9 +76,4 @@ geom_gsea <- function(df, prettyGSEA=T, ...){
   return( main )
 
 }
-
-
-
-
-
 

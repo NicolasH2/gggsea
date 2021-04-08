@@ -14,7 +14,8 @@
 #' library(gggsea)
 #' library(ggplot)
 #'
-#' curve <- gseaCurve()
+#' curve <- gseaCurve(myRankedlist, mySetlist)
+#' ggplot() + geom_gseaGradient(curve) + theme_gsea()
 #'
 geom_gseaGradient <- function(df, ...){
 

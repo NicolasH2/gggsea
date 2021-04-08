@@ -4,12 +4,14 @@
 \alias{gseaCurve}
 \title{calculate coordinates for a GSEA plot}
 \usage{
-gseaCurve(rl, setlist, weight = 1)
+gseaCurve(rl, setlist, gsea = NULL, weight = 1)
 }
 \arguments{
 \item{rl}{named(!), sorted(!) vector. This ranked list's Values are the ranking metric (e.g. log2FC), names are the genes IDs. Gene IDs have to be of the same type as the ones in setList.}
 
-\item{setlist}{names(!) list of character vectors. Each vector is a gene signature, each item in that vector is a gene ID (same type as the ones in rl!)}
+\item{setlist}{named(!) list of character vectors. Each vector is a gene signature, each item in that vector is a gene ID (same type as the ones in rl!)}
+
+\item{gsea}{data.frame with certain columns: pathway, pval, NES. The latter two will be printed on the GSEA plot.}
 
 \item{weight}{number, the higher the more important are the changes at the extremes. 0: no weight, i.e. each found gene counts the same. 1: each gene counts according to its metric. 2: genes counts according to their squared matric, etc.}
 }
@@ -25,10 +27,7 @@ calculating the enrichment score at any given point follows standard rules. See 
 }
 \examples{
 library(gggsea)
-library(ggplot)
 
-curve <- gseaCurve()
-
-
+curve <- gseaCurve(myRankedlist, mySetlist)
 
 }

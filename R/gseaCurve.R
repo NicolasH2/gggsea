@@ -4,20 +4,18 @@
 #' grDevices
 #'
 #' @param rl named(!), sorted(!) vector. This ranked list's Values are the ranking metric (e.g. log2FC), names are the genes IDs. Gene IDs have to be of the same type as the ones in setList.
-#' @param setlist names(!) list of character vectors. Each vector is a gene signature, each item in that vector is a gene ID (same type as the ones in rl!)
+#' @param setlist named(!) list of character vectors. Each vector is a gene signature, each item in that vector is a gene ID (same type as the ones in rl!)
+#' @param gsea data.frame with certain columns: pathway, pval, NES. The latter two will be printed on the GSEA plot.
 #' @param weight number, the higher the more important are the changes at the extremes. 0: no weight, i.e. each found gene counts the same. 1: each gene counts according to its metric. 2: genes counts according to their squared matric, etc.
 #' @return a data.frame with coordinates for a GSEA plot. When given as an input, geom_gsea will automatically take care. Otherwise: x and y plot the regular curve (geom_path); x, y1ticks and y2ticks plot the ticks (use geom_segment); color, x, xGradientStart, y1gradient and y2gradient for color bar (use geom_rect)
 #' @details calculating the enrichment score at any given point follows standard rules. See for example https://www.pathwaycommons.org/guide/primers/data_analysis/gsea/
 #' @export
 #' @examples
 #' library(gggsea)
-#' library(ggplot)
 #'
-#' curve <- gseaCurve()
+#' curve <- gseaCurve(myRankedlist, mySetlist)
 #'
-#'
-#'
-gseaCurve <- function(rl, setlist, weight=1){
+gseaCurve <- function(rl, setlist, gsea=NULL, weight=1){
 
   dfList <- mapply(function(set, setname){
     if( sum(set %in% names(rl))==0 ) stop("None of the genes in the ranked list are present in the set.")
@@ -53,6 +51,20 @@ gseaCurve <- function(rl, setlist, weight=1){
 
     df$bottomline <- lowestPoint
 
+    # add coordinates for statistics
+    if(!is.null(gsea)){
+      subdf <- gsea[gsea$pathway %in% setname,]
+      statdf <- data.frame(x = 0,
+                           yNES = lowestPoint+sizeFactor*.02,
+                           NES = subdf$NES,
+                           NEStext = paste("italic(NES)==",as.character(round(subdf$NES,2))),
+                           ypval = lowestPoint+sizeFactor*.07,
+                           pval = subdf$pval,
+                           pvaltext = paste("italic(p)==",as.character(round(subdf$pval,4))) )
+      df <- merge(df, statdf, by="x", all=T)
+    }
+
+    # add coordinates for ticks and the colorgradient
     df <- merge(df, .presenceTicks(rl, set, lowestPoint, sizeFactor), by="x", all=TRUE)
     lowestPoint <- min(df$y2ticks, na.rm=TRUE)
     df <- merge(df, .colorGradient(rl, lowestPoint, sizeFactor), by="x", all=TRUE)
@@ -62,6 +74,7 @@ gseaCurve <- function(rl, setlist, weight=1){
   }, set=setlist, setname=names(setlist), SIMPLIFY=FALSE)
 
   df <- do.call(rbind, dfList)
+
   return(df)
 }
 

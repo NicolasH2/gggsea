@@ -28,6 +28,7 @@ uses the ggplot2::layer function, with geom="segment"
 library(gggsea)
 library(ggplot)
 
-curve <- gseaCurve()
+curve <- gseaCurve(myRankedlist, mySetlist)
+ggplot() + geom_gseaTicks(curve) + theme_gsea()
 
 }
