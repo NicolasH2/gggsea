@@ -62,11 +62,11 @@ geom_gsea <- function(
                )
   if(zeroline){
     xmid <-
-    main <- c(main,
+    main <- c(
               ggplot2::geom_segment(mapping=ggplot2::aes(x=zeroline, xend=zeroline, y=bottomline, yend=Inf),
                                     data=df[!duplicated(df$set),],
-                                    color=zerocolor, size=zerosize, linetype=zerotype)
-    )
+                                    color=zerocolor, size=zerosize, linetype=zerotype),
+              main)
   }
 
   # beautify the graph
