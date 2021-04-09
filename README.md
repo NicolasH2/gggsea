@@ -7,8 +7,7 @@ An R package that draws GSEA plots in [ggplot2](https://ggplot2.tidyverse.org/).
 Table of contents:
 
 - [Installation](#Installation)
-- [Single GSEA plot](#Single-GSEA-plot)
-- [Multiple GSEA plots](#Multiple-GSEA-plots)
+- [Regular GSEA plot](#GSEA-plot)
 - [Customization](#Customization)
 
 # Installation
@@ -17,7 +16,7 @@ Install the package from the git repository:
 devtools::install_github("nicolash2/gggsea")
 ```
 
-# GSEA plots
+# Regular GSEA plots
 
 The heart of gggsea is the function gseaCurve. It will return a data.frame that has all necessary values to produce a GSEA plot. To plot the data, one could either use general ggplot function (like geom_path) or use gggsea's inbuilt geoms.
 To use gseaCurve you need 2 things: a sorted vector, and a list of gene sets. Here we will use gggsea's inbuilt data. Note that from the list of gene sets we will only use one gene set! For using several gene sets at once, look at the next section.
@@ -52,7 +51,7 @@ ggplot2::ggplot() +
 
 <img src="readme_files/gsea_theme.png"/>
 
-We can add statistics to the plot. gggsea does not calculate statistics! They have to be provided as a data.frame with at least these 3 columns: pathway, NES, pval.  The calculation can e.g. be done via the [fgsea](https://bioconductor.org/packages/release/bioc/html/fgsea.html) package.
+We can add statistics to the plot. gggsea does not calculate statistics! They have to be provided as a data.frame with at least these 3 columns: pathway, NES, pval.  The calculation can e.g. be done via the [fgsea](https://bioconductor.org/packages/release/bioc/html/fgsea.html) package. You can change the size of the statistics vie the labelsize parameter in geom_gsea. It will be unaffacted by the size set with theme_gsea.
 
 ```r
 gsea <- fgsea::fgsea(setlist, rl, nperm=1000)
@@ -64,4 +63,24 @@ ggplot2::ggplot() +
 ```
 <img src="readme_files/gsea_statistics.png"/>
 
-You can change the size of the statistics vie the labelsize parameter in geom_gsea. It will be unaffacted by the size set with theme_gsea.
+# Customization
+
+```r
+gsea <- fgsea::fgsea(setlist, rl, nperm=1000)
+df2 <- gseaCurve(rl, setlist, gsea)
+
+ggplot2::ggplot() + 
+  geom_gsea(df2, linecolor=c("black","purple"), tickcolor=c("green", "cyan")) + 
+  theme_gsea(7)
+```
+<img src="readme_files/gsea_customcolors.png"/>
+
+```r
+gsea <- fgsea::fgsea(setlist, rl, nperm=1000)
+df2 <- gseaCurve(rl, setlist, gsea)
+
+ggplot2::ggplot() + 
+  geom_gsea(df2, nrow=2) + 
+  theme_gsea(7)
+```
+<img src="readme_files/gsea_nrow.png"/>
