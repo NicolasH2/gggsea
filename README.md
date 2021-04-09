@@ -74,7 +74,7 @@ ggplot2::ggplot() +
 ```
 <img src="readme_files/gsea_customcolors.png"/>
 
-Add a zero-line
+Add a zero-line. This line will be drawn at the point gene with the lowest metric. If several genes have the lowest metric, the line will be drawn at the middle of these genes.
 
 ```r
 ggplot2::ggplot() + 
