@@ -27,7 +27,7 @@ geom_gseaLine <- function(df, ...){
     position = "identity",
     show.legend = FALSE,
     inherit.aes = TRUE,
-    params=list(...)
+    params=list(lineend="round", ...)
   )
   userInput <- names(as.list(match.call())) #get all parameters set by the user
   if(!any(c("color","colour") %in% userInput)) gseaLine$aes_params[["colour"]] <- "green"

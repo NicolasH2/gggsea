@@ -14,6 +14,10 @@
 #' @param df data.frame, calculated by the function gseaCurve
 #' @param labelsize number, font size of the statistics (if gsea is provided)
 #' @param prettyGSEA boolean, should some aesthetics be automatically added? Adds a 0-line, regulates y-breaks and labels the axes.
+#' @param linecolor string, color of the main gsea line
+#' @param linesize number, thickness of the main gsea line
+#' @param tickcolor string, color of the ticks representing hit genes
+#' @param ticksize number, thickness of the ticks representing hit genes
 #' @return a list of ggplot layers, ready to be added to a ggplot object
 #' @details uses the functions geom_gseaLine, geom_gseaTicks and geom_gseaGradient, from this package
 #' @export
@@ -24,22 +28,32 @@
 #' curve <- gseaCurve(myRankedlist, mySetlist)
 #' ggplot() + geom_gsea(curve) + theme_gsea()
 #'
-geom_gsea <- function(df, labelsize=4, prettyGSEA=T, ncol=NULL, nrow=NULL, ...){
+geom_gsea <- function(
+  df, labelsize=4, prettyGSEA=T, ncol=NULL, nrow=NULL,
+  linecolor="green", linesize=1,
+  tickcolor="black", ticksize=0.5,
+  ...
+){
+  # in case the user provides several colors/sizes, each set will get a different color
+  nsets <- length(unique(df$set)) #number of sets. The reason it is calculated like this is only in case the user provides more colors (or sizes) than there are sets
+  linecolor <- rep(rep(linecolor, nsets)[1:nsets], each=nrow(df)/nsets) #the linecolor vector is repeated n times (in case only 1 color was provided) and then only the first n are taken (in case too many colors were provided), which are repeated as many times as there are rows in df, so every line part gets a color
+  linesize <- rep(rep(linesize, nsets)[1:nsets], each=nrow(df)/nsets)
 
-  gseaLine <- geom_gseaLine(df, ...)
-  ticks <- geom_gseaTicks(df[!is.na(df$y1ticks), ], ...)
+  nticks <- nrow(df[!is.na(df$y1ticks),]) #number of ticks (other than lines, there is not one tick for every row in the data.frame)
+  tickcolor <- rep(rep(tickcolor, nsets)[1:nsets], each=nticks/nsets)
+  ticksize <- rep(rep(ticksize, nsets)[1:nsets], each=nticks/nsets)
+
+  # plot the main parts
+  gseaLine <- geom_gseaLine(df,                     color=linecolor, size=linesize, ...)
+  ticks <- geom_gseaTicks(df[!is.na(df$y1ticks), ], color=tickcolor, size=ticksize, ...)
   gradient <- geom_gseaGradient(df[!is.na(df$y1gradient), ], ...)
+  statistics <- ggplot2::geom_label(data=df[!is.na(df$stattext),],
+                                    mapping = aes(x, ystat, label=stattext ),
+                                    size=labelsize, hjust=0, vjust=0 , parse=T, alpha=.7, fill="white")
 
-  # statlabel <- substitute(paste(italic("NES"), " = ",NES))
-  # paste0("NES=",round(NES,2), " p=",round(pval,4))
-
-  # df$ypval <- df$ypval + labelsize^(1.7)/40 * abs(df$ypval-df$yNES)
-
-  main <- list(gseaLine,
-               ticks,
-               gradient,
-               ggplot2::facet_wrap(~set, scale="free_y", ncol=ncol, nrow=nrow),
-               ggplot2::geom_label(data=df[!is.na(df$stattext),], mapping = aes(x, ystat, label=stattext ), size=labelsize, hjust=0, vjust=0 , parse=T, alpha=.7, fill="white")
+  # combine all parts and add a facet_wrap
+  main <- list(gseaLine, ticks, gradient, statistics,
+               ggplot2::facet_wrap(~set, scale="free_y", ncol=ncol, nrow=nrow)
                )
 
   # beautify the graph
