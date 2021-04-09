@@ -13,11 +13,15 @@
 #'
 #' @param df data.frame, calculated by the function gseaCurve
 #' @param labelsize number, font size of the statistics (if gsea is provided)
+#' @param zeroline boolean, should a zero line be displayed?
 #' @param prettyGSEA boolean, should some aesthetics be automatically added? Adds a 0-line, regulates y-breaks and labels the axes.
 #' @param linecolor string, color of the main gsea line
 #' @param linesize number, thickness of the main gsea line
 #' @param tickcolor string, color of the ticks representing hit genes
 #' @param ticksize number, thickness of the ticks representing hit genes
+#' @param zerocolor string, color of the zeroline
+#' @param zerosize number, thickness of the zeroline
+#' @param zerotype string, linetype of the zeroline (e.g. "dotted")
 #' @return a list of ggplot layers, ready to be added to a ggplot object
 #' @details uses the functions geom_gseaLine, geom_gseaTicks and geom_gseaGradient, from this package
 #' @export
@@ -29,9 +33,10 @@
 #' ggplot() + geom_gsea(curve) + theme_gsea()
 #'
 geom_gsea <- function(
-  df, labelsize=4, prettyGSEA=T, ncol=NULL, nrow=NULL,
+  df, labelsize=4, zeroline=F, prettyGSEA=T, ncol=NULL, nrow=NULL,
   linecolor="green", linesize=1,
   tickcolor="black", ticksize=0.5,
+  zerocolor="black", zerosize=0.5, zerotype="dashed",
   ...
 ){
   # in case the user provides several colors/sizes, each set will get a different color
@@ -55,6 +60,14 @@ geom_gsea <- function(
   main <- list(gseaLine, ticks, gradient, statistics,
                ggplot2::facet_wrap(~set, scale="free_y", ncol=ncol, nrow=nrow)
                )
+  if(zeroline){
+    xmid <-
+    main <- c(main,
+              ggplot2::geom_segment(mapping=ggplot2::aes(x=zeroline, xend=zeroline, y=bottomline, yend=Inf),
+                                    data=df[!duplicated(df$set),],
+                                    color=zerocolor, size=zerosize, linetype=zerotype)
+    )
+  }
 
   # beautify the graph
   if(prettyGSEA){

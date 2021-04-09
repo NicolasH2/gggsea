@@ -4,18 +4,49 @@
 \alias{geom_gsea}
 \title{create a venn diagram in ggplot2}
 \usage{
-geom_gsea(df, labelsize = 4, prettyGSEA = T, ncol = NULL, nrow = NULL, ...)
+geom_gsea(
+  df,
+  labelsize = 4,
+  zeroline = F,
+  prettyGSEA = T,
+  ncol = NULL,
+  nrow = NULL,
+  linecolor = "green",
+  linesize = 1,
+  tickcolor = "black",
+  ticksize = 0.5,
+  zerocolor = "black",
+  zerosize = 0.5,
+  zerotype = "dashed",
+  ...
+)
 }
 \arguments{
 \item{df}{data.frame, calculated by the function gseaCurve}
 
 \item{labelsize}{number, font size of the statistics (if gsea is provided)}
 
+\item{zeroline}{boolean, should a zero line be displayed?}
+
 \item{prettyGSEA}{boolean, should some aesthetics be automatically added? Adds a 0-line, regulates y-breaks and labels the axes.}
 
 \item{ncol}{Number of rows and columns.}
 
 \item{nrow}{Number of rows and columns.}
+
+\item{linecolor}{string, color of the main gsea line}
+
+\item{linesize}{number, thickness of the main gsea line}
+
+\item{tickcolor}{string, color of the ticks representing hit genes}
+
+\item{ticksize}{number, thickness of the ticks representing hit genes}
+
+\item{zerocolor}{string, color of the zeroline}
+
+\item{zerosize}{number, thickness of the zeroline}
+
+\item{zerotype}{string, linetype of the zeroline (e.g. "dotted")}
 
 \item{...}{Other arguments passed on to \code{\link[ggplot2:layer]{layer()}}. These are
 often aesthetics, used to set an aesthetic to a fixed value, like

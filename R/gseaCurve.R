@@ -50,6 +50,7 @@ gseaCurve <- function(rl, setlist, gsea=NULL, weight=1){
     sizeFactor <- abs(maxES - minES)
     lowestPoint <- minES - sizeFactor / 30
     df$bottomline <- lowestPoint
+    df$zeroline <- median(which(rl==sort(abs(rl))[1]))
 
     #=======================================================
     # add statistics =======================================================
