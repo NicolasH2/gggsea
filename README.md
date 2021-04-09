@@ -74,6 +74,15 @@ ggplot2::ggplot() +
 ```
 <img src="readme_files/gsea_customcolors.png"/>
 
+Add a zero-line
+
+```r
+ggplot2::ggplot() + 
+  geom_gsea(df2, zeroline = T) +
+  theme_gsea(7)
+```
+<img src="readme_files/gsea_zeroline.png"/>
+
 Changing rows and columns
 
 ```r
