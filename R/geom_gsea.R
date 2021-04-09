@@ -39,9 +39,9 @@ geom_gsea <- function(
   linecolor <- rep(rep(linecolor, nsets)[1:nsets], each=nrow(df)/nsets) #the linecolor vector is repeated n times (in case only 1 color was provided) and then only the first n are taken (in case too many colors were provided), which are repeated as many times as there are rows in df, so every line part gets a color
   linesize <- rep(rep(linesize, nsets)[1:nsets], each=nrow(df)/nsets)
 
-  nticks <- nrow(df[!is.na(df$y1ticks),]) #number of ticks (other than lines, there is not one tick for every row in the data.frame)
-  tickcolor <- rep(rep(tickcolor, nsets)[1:nsets], each=nticks/nsets)
-  ticksize <- rep(rep(ticksize, nsets)[1:nsets], each=nticks/nsets)
+  nticks <- unlist( lapply(unique(df$set), function(x) nrow(df[df$set %in% x & !is.na(df$y1ticks),])) )#number of ticks for each set (other than lines, there is not one tick for every row in the data.frame and the number of ticks is not the same for each set)
+  tickcolor <- rep(rep(tickcolor, nsets)[1:nsets], nticks) #each color is repeated a different number of times
+  ticksize <- rep(rep(ticksize, nsets)[1:nsets], nticks)
 
   # plot the main parts
   gseaLine <- geom_gseaLine(df,                     color=linecolor, size=linesize, ...)
