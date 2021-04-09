@@ -2,7 +2,7 @@
 
 An R package that draws GSEA plots in [ggplot2](https://ggplot2.tidyverse.org/). The plot can easily be modified using ggplots standard options.
 
-<img src="readme_files/gsea_facet.png"/>
+<img src="readme_files/gsea_statistics.png"/>
 
 Table of contents:
 
@@ -17,23 +17,24 @@ Install the package from the git repository:
 devtools::install_github("nicolash2/gggsea")
 ```
 
-# Single GSEA plot
+# GSEA plots
 
 The heart of gggsea is the function gseaCurve. It will return a data.frame that has all necessary values to produce a GSEA plot. To plot the data, one could either use general ggplot function (like geom_path) or use gggsea's inbuilt geoms.
 To use gseaCurve you need 2 things: a sorted vector, and a list of gene sets. Here we will use gggsea's inbuilt data. Note that from the list of gene sets we will only use one gene set! For using several gene sets at once, look at the next section.
 
 ``` r
 library(gggsea)
-myRL <- gggsea::myRankedlist #the sorted vector must be a named! The names are gene IDs and the actual values are numbers (some metric, e.g. log2FC)
-mySetlist <- gggsea::mySetlist #this list must be named! Each list item is a vector of gene IDs
+library(ggplot2)
+rl <- gggsea::myRankedlist #the sorted vector must be a named! The names are gene IDs and the actual values are numbers (some metric, e.g. log2FC)
+setlist <- gggsea::mySetlist #this list must be named! Each list item is a vector of gene IDs
 
-print(head(myRL))
-print(mySetlist)
+print(head(rl))
+print(setlist)
 
 #df needs the ranked list and a 
-df <- gseaCurve(myRL, mySetlist[1])
+df <- gseaCurve(rl, setlist)
 ```
-We feed the output from gseaCurv to the geom_gsea function
+We feed the output from gseaCurve to the geom_gsea function
 
 ```r
 ggplot2::ggplot() + 
@@ -46,21 +47,21 @@ We can add the gsea_theme.
 ```r
 ggplot2::ggplot() + 
   geom_gsea(df) +
-  theme_gsea()
+  theme_gsea(7) #the number defines the textsize
 ```
 
 <img src="readme_files/gsea_theme.png"/>
 
-# Multiple GSEA plots
-
-If we want to vizualize several sets at once (against the same ranked list), we can do that. When using gseaCurve, simply use more sets, but take care that they are always in a names list.
-
+We can add statistics to the plot. gggsea does not calculate statistics! They have to be provided as a data.frame with at least these 3 columns: pathway, NES, pval.  The calculation can e.g. be done via the [fgsea](https://bioconductor.org/packages/release/bioc/html/fgsea.html) package.
 
 ```r
-df <- gseaCurve(myRL, mySetlist[1:2])
+gsea <- fgsea::fgsea(setlist, rl, nperm=1000)
+df2 <- gseaCurve(rl, setlist, gsea)
 
 ggplot2::ggplot() + 
-  geom_gsea(df) +
-  theme_gsea(textsize = 10)
+  geom_gsea(df2) + 
+  theme_gsea(7)
 ```
-<img src="readme_files/gsea_facet.png"/>
+<img src="readme_files/gsea_statistics.png"/>
+
+You can change the size of the statistics vie the labelsize parameter in geom_gsea. It will be unaffacted by the size set with theme_gsea.
