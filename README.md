@@ -65,22 +65,20 @@ ggplot2::ggplot() +
 
 # Customization
 
-```r
-gsea <- fgsea::fgsea(setlist, rl, nperm=1000)
-df2 <- gseaCurve(rl, setlist, gsea)
+Changing colors and sizes
 
+```r
 ggplot2::ggplot() + 
-  geom_gsea(df2, linecolor=c("black","purple"), tickcolor=c("green", "cyan")) + 
+  geom_gsea(df2, linecolor=c("black","purple"), tickcolor=c("green", "cyan")) + # you can also set linesize and ticksize
   theme_gsea(7)
 ```
 <img src="readme_files/gsea_customcolors.png"/>
 
-```r
-gsea <- fgsea::fgsea(setlist, rl, nperm=1000)
-df2 <- gseaCurve(rl, setlist, gsea)
+Changing rows and columns
 
+```r
 ggplot2::ggplot() + 
-  geom_gsea(df2, nrow=2) + 
+  geom_gsea(df2, nrow=2) + # you can also set ncol
   theme_gsea(7)
 ```
 <img src="readme_files/gsea_nrow.png"/>
