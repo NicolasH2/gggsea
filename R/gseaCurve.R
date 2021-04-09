@@ -2,6 +2,7 @@
 #'
 #' Imports:
 #' grDevices
+#' dplyr
 #'
 #' @param rl named(!), sorted(!) vector. This ranked list's Values are the ranking metric (e.g. log2FC), names are the genes IDs. Gene IDs have to be of the same type as the ones in setList.
 #' @param setlist named(!) list of character vectors. Each vector is a gene signature, each item in that vector is a gene ID (same type as the ones in rl!)
@@ -42,38 +43,42 @@ gseaCurve <- function(rl, setlist, gsea=NULL, weight=1){
     xcoord <- seq_along(es)
 
     ## the data.frame df will contain everything for the GSEAplot. For now it just contains the actual curve
-    df <- data.frame(x = c(0,xcoord), y = c(0,es), set = setname)
+    df <- data.frame(x = c(0,xcoord), y = c(0,es), set = setname, gene=c(0, names(rl)) )
 
     maxES <- max(df$y)
     minES <- min(df$y)
     sizeFactor <- abs(maxES - minES)
     lowestPoint <- minES - sizeFactor / 30
-
     df$bottomline <- lowestPoint
 
-    # add coordinates for statistics
-    if(!is.null(gsea)){
-      subdf <- gsea[gsea$pathway %in% setname,]
-      statdf <- data.frame(x = 0,
-                           yNES = lowestPoint+sizeFactor*.02,
-                           NES = subdf$NES,
-                           NEStext = paste("italic(NES)==",as.character(round(subdf$NES,2))),
-                           ypval = lowestPoint+sizeFactor*.07,
-                           pval = subdf$pval,
-                           pvaltext = paste("italic(p)==",as.character(round(subdf$pval,4))) )
-      df <- merge(df, statdf, by="x", all=T)
-    }
+    #=======================================================
+    # add statistics =======================================================
+    # label will initially be empty and only be filled if gsea was provided
+    statdf <- data.frame(x = 0,
+                         ystat = lowestPoint+sizeFactor*.02,
+                         stattext = NA )
 
-    # add coordinates for ticks and the colorgradient
+    if(!is.null(gsea)){
+      subgsea <- gsea[gsea$pathway %in% setname,]
+      statdf$stattext = paste0("atop(italic(NES)==",as.character(round(subgsea$NES, 2)),
+                               ",italic(p)==",      as.character(round(subgsea$pval,4)),")")
+    }
+    df <- merge(df, statdf, by="x", all=T) #merge the dataframe with the statistics (will add statistics coordinates and label only to the first row (x=0))
+
+    #=======================================================
+    # add ticks =======================================================
     df <- merge(df, .presenceTicks(rl, set, lowestPoint, sizeFactor), by="x", all=TRUE)
-    lowestPoint <- min(df$y2ticks, na.rm=TRUE)
+    lowestPoint <- min(df$y2ticks, na.rm=TRUE) # lowest point is changed for the color gradient
+
+    #=======================================================
+    # add color gradient =======================================================
     df <- merge(df, .colorGradient(rl, lowestPoint, sizeFactor), by="x", all=TRUE)
 
     return(df)
 
   }, set=setlist, setname=names(setlist), SIMPLIFY=FALSE)
 
-  df <- do.call(rbind, dfList)
+  df <- do.call(rbind, dfList) # combine all df's (were calculated separately for each set)
 
   return(df)
 }
@@ -84,18 +89,21 @@ gseaCurve <- function(rl, setlist, gsea=NULL, weight=1){
 
   ticks <- data.frame(x = which(names(rl) %in% set),
                       y1ticks = lowestPoint - sizeFactor / 40,
-                      y2ticks = lowestPoint - sizeFactor / 8)
+                      y2ticks = lowestPoint - sizeFactor / 8,
+                      hitgene = names(rl[names(rl) %in% set]))
 
   return(ticks)
 }
 
 #========================================
 # calculate the color gradient
-.colorGradient <- function(rl, lowestPoint, sizeFactor, lowcol="blue", midcol="white", highcol="red", resolution=40){
+.colorGradient <- function(rl, lowestPoint, sizeFactor, lowcol="blue", midcol="white", highcol="red", resolution=10){
 
   # 1) create a data.frame that will eventually hold the plotting values. Start with a sequence from -max to +max of the ranked list's metric
-  limit <- max(abs(rl))
-  gradient <- data.frame( valueMax = seq(-limit, limit, length.out=resolution) )[-1,,drop=FALSE]
+  gradient <- unlist(lapply(seq(0,1,length.out=resolution/2+1), function(x) dplyr::nth(sort(abs(rl)), length(rl)*x) ))
+  gradient <- gradient[-1]
+  gradient <- sort(c(gradient,-gradient))
+  gradient <- data.frame(valueMax=gradient[-1])
 
   # 2) add color values to the table that correspond to the metric
   colfunc1 <- grDevices::colorRampPalette(c(highcol, midcol)) #functions for getting a color ramp

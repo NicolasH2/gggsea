@@ -21,6 +21,7 @@ a data.frame with coordinates for a GSEA plot. When given as an input, geom_gsea
 \description{
 Imports:
 grDevices
+dplyr
 }
 \details{
 calculating the enrichment score at any given point follows standard rules. See for example https://www.pathwaycommons.org/guide/primers/data_analysis/gsea/

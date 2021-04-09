@@ -4,7 +4,7 @@
 \alias{geom_gsea}
 \title{create a venn diagram in ggplot2}
 \usage{
-geom_gsea(df, labelsize = 4, prettyGSEA = T, ...)
+geom_gsea(df, labelsize = 4, prettyGSEA = T, ncol = NULL, nrow = NULL, ...)
 }
 \arguments{
 \item{df}{data.frame, calculated by the function gseaCurve}
@@ -13,14 +13,14 @@ geom_gsea(df, labelsize = 4, prettyGSEA = T, ...)
 
 \item{prettyGSEA}{boolean, should some aesthetics be automatically added? Adds a 0-line, regulates y-breaks and labels the axes.}
 
+\item{ncol}{Number of rows and columns.}
+
+\item{nrow}{Number of rows and columns.}
+
 \item{...}{Other arguments passed on to \code{\link[ggplot2:layer]{layer()}}. These are
 often aesthetics, used to set an aesthetic to a fixed value, like
 \code{colour = "red"} or \code{size = 3}. They may also be parameters
 to the paired geom/stat.}
-
-\item{withTicks}{boolean, should there be ticks?}
-
-\item{withGradient}{boolean, should ther be a color gradient?}
 }
 \value{
 a list of ggplot layers, ready to be added to a ggplot object
