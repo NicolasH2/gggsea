@@ -1,6 +1,6 @@
 # gggsea
 
-An R package that draws GSEA plots in [ggplot2](https://ggplot2.tidyverse.org/). The plot can easily be modified using ggplots standard options.
+An [R](https://www.r-project.org) package that draws GSEA plots in [ggplot2](https://ggplot2.tidyverse.org/). The plot can easily be modified using ggplots standard options.
 
 <img src="readme_files/gsea_statistics.png"/>
 
