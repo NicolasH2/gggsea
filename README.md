@@ -24,13 +24,13 @@ To use gseaCurve you need 2 things: a sorted vector, and a list of gene sets. He
 ``` r
 library(gggsea)
 library(ggplot2)
-rl <- gggsea::myRankedlist #the sorted vector must be a named! The names are gene IDs and the actual values are numbers (some metric, e.g. log2FC)
+rl <- gggsea::myRankedlist #the sorted vector must be named! The names are gene IDs and the actual values are numbers (some metric, e.g. log2FC)
 setlist <- gggsea::mySetlist #this list must be named! Each list item is a vector of gene IDs
 
 print(head(rl))
 print(setlist)
 
-#df needs the ranked list and a 
+#df needs the ranked list and a set list
 df <- gseaCurve(rl, setlist)
 ```
 We feed the output from gseaCurve to the geom_gsea function
