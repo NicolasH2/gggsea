@@ -101,7 +101,7 @@ gseaCurve <- function(rl, setlist, gsea=NULL, weight=1){
 .colorGradient <- function(rl, lowestPoint, sizeFactor, lowcol="blue", midcol="white", highcol="red", resolution=20){
 
   # 1) create a data.frame that will eventually hold the plotting values. Start with a sequence from -max to +max of the ranked list's metric
-  gradient <- unlist(lapply(seq(0,1,length.out=resolution/2+1), function(x) dplyr::nth(sort(abs(rl)), length(rl)*x) ))
+  gradient <- unlist(lapply(seq(0,1,length.out=resolution/2+1), function(x) dplyr::nth(sort(abs(rl)), as.integer(length(rl)*x)) ))
   gradient <- gradient[-1]
   gradient <- sort(c(gradient,-gradient))
   gradient <- data.frame(valueMax=gradient[-1])
