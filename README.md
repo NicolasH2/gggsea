@@ -91,3 +91,21 @@ ggplot2::ggplot() +
   theme_gsea(7)
 ```
 <img src="readme_files/gsea_nrow.png"/>
+
+Changing the title width to accomodate different text sizes
+
+```r
+ggplot2::ggplot() + 
+  geom_gsea(df2, titlelength = 5) +
+  theme_gsea(7)
+```
+<img src="readme_files/gsea_titlebreak.png"/>
+
+Stop gggsea's behaviour of removing underscores. However, titles without spaces do not receive linebreaks.
+
+```r
+ggplot2::ggplot() + 
+  geom_gsea(df2, replaceUnderscores = FALSE) +
+  theme_gsea(7)
+```
+<img src="readme_files/gsea_underscores.png"/>
