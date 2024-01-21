@@ -51,7 +51,7 @@ geom_gsea <- function(
   tickcolor <- rep(rep(tickcolor, nsets)[1:nsets], nticks) #each color is repeated a different number of times
   ticksize <- rep(rep(ticksize, nsets)[1:nsets], nticks)
 
-  if(replcaeUnderscores) df$set <- gsub("_"," ",df$set)
+  if(replaceUnderscores) df$set <- gsub("_"," ",df$set)
 
   # plot the main parts
   gseaLine <- geom_gseaLine(df,                     color=linecolor, size=linesize, ...)
