@@ -22,6 +22,8 @@
 #' @param zerocolor string, color of the zeroline
 #' @param zerosize number, thickness of the zeroline
 #' @param zerotype string, linetype of the zeroline (e.g. "dotted")
+#' @param titlelength integer, number ofcharacters after which title gets a linebreak. Does not break during a word and therefore does not work if there are no spaces.
+#' @param replaceUnderscores boolean, should underscores in the title be replaced with spaces?
 #' @return a list of ggplot layers, ready to be added to a ggplot object
 #' @details uses the functions geom_gseaLine, geom_gseaTicks and geom_gseaGradient, from this package
 #' @export
@@ -37,6 +39,7 @@ geom_gsea <- function(
   linecolor="green", linesize=1,
   tickcolor="black", ticksize=0.5,
   zerocolor="black", zerosize=0.5, zerotype="dashed",
+  titlelength=20, replaceUnderscores=TRUE,
   ...
 ){
   # in case the user provides several colors/sizes, each set will get a different color
@@ -48,6 +51,8 @@ geom_gsea <- function(
   tickcolor <- rep(rep(tickcolor, nsets)[1:nsets], nticks) #each color is repeated a different number of times
   ticksize <- rep(rep(ticksize, nsets)[1:nsets], nticks)
 
+  if(replcaeUnderscores) df$set <- gsub("_"," ",df$set)
+
   # plot the main parts
   gseaLine <- geom_gseaLine(df,                     color=linecolor, size=linesize, ...)
   ticks <- geom_gseaTicks(df[!is.na(df$y1ticks), ], color=tickcolor, size=ticksize, ...)
@@ -58,7 +63,7 @@ geom_gsea <- function(
 
   # combine all parts and add a facet_wrap
   main <- list(gseaLine, ticks, gradient, statistics,
-               ggplot2::facet_wrap(~set, scale="free_y", ncol=ncol, nrow=nrow)
+               ggplot2::facet_wrap(~set, scale="free_y", ncol=ncol, nrow=nrow, labeller=labeller(set= label_wrap_gen(titlelength)))
                )
   if(zeroline){
     xmid <-
