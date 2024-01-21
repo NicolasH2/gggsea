@@ -39,7 +39,7 @@ We feed the output from gseaCurve to the geom_gsea function
 ggplot2::ggplot() + 
   geom_gsea(df)
 ```
-<img src="readme_files/gsea_default.png"/>
+<img src="readme_files/gsea_default.png" width='600'/>
 
 We can add the gsea_theme.
 
@@ -49,7 +49,7 @@ ggplot2::ggplot() +
   theme_gsea(7) #the number defines the textsize
 ```
 
-<img src="readme_files/gsea_theme.png"/>
+<img src="readme_files/gsea_theme.png" width='600'/>
 
 We can add statistics to the plot. gggsea does not calculate statistics! They have to be provided as a data.frame with at least these 3 columns: pathway, NES, pval.  The calculation can e.g. be done via the [fgsea](https://bioconductor.org/packages/release/bioc/html/fgsea.html) package. You can change the size of the statistics vie the labelsize parameter in geom_gsea. It will be unaffacted by the size set with theme_gsea.
 
@@ -61,7 +61,7 @@ ggplot2::ggplot() +
   geom_gsea(df2) + 
   theme_gsea(7)
 ```
-<img src="readme_files/gsea_statistics.png"/>
+<img src="readme_files/gsea_statistics.png" width='600'/>
 
 # Customization
 
@@ -72,7 +72,7 @@ ggplot2::ggplot() +
   geom_gsea(df2, linecolor=c("black","purple"), tickcolor=c("green", "cyan")) + # you can also set linesize and ticksize
   theme_gsea(7)
 ```
-<img src="readme_files/gsea_customcolors.png"/>
+<img src="readme_files/gsea_customcolors.png" width='600'/>
 
 Add a zero-line. This line will be drawn at the point gene with the lowest metric. If several genes have the lowest metric, the line will be drawn at the middle of these genes.
 
@@ -81,7 +81,7 @@ ggplot2::ggplot() +
   geom_gsea(df2, zeroline = T) +
   theme_gsea(7)
 ```
-<img src="readme_files/gsea_zeroline.png"/>
+<img src="readme_files/gsea_zeroline.png" width='600'/>
 
 Changing rows and columns
 
@@ -90,7 +90,7 @@ ggplot2::ggplot() +
   geom_gsea(df2, nrow=2) + # you can also set ncol
   theme_gsea(7)
 ```
-<img src="readme_files/gsea_nrow.png"/>
+<img src="readme_files/gsea_nrow.png" width='600'/>
 
 Changing the title width to accomodate different text sizes
 
@@ -99,7 +99,7 @@ ggplot2::ggplot() +
   geom_gsea(df2, titlelength = 5) +
   theme_gsea(7)
 ```
-<img src="readme_files/gsea_titlebreak.png"/>
+<img src="readme_files/gsea_titlebreak.png" width='600'/>
 
 Stop gggsea's behaviour of removing underscores. However, titles without spaces do not receive linebreaks.
 
@@ -108,4 +108,4 @@ ggplot2::ggplot() +
   geom_gsea(df2, replaceUnderscores = FALSE) +
   theme_gsea(7)
 ```
-<img src="readme_files/gsea_underscores.png"/>
+<img src="readme_files/gsea_underscores.png" width='600'/>
