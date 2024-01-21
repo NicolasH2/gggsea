@@ -90,7 +90,7 @@ ggplot2::ggplot() +
   geom_gsea(df2, nrow=2) + # you can also set ncol
   theme_gsea(7)
 ```
-<img src="readme_files/gsea_nrow.png" width='600'/>
+<img src="readme_files/gsea_nrow.png" width='300'/>
 
 Changing the title width to accomodate different text sizes
 
